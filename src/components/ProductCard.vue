@@ -1,9 +1,17 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import type { Product } from '../types/product'
+import { useCartStore } from '../stores/cart'
 
-defineProps<{
+const props = defineProps<{
   product: Product
 }>()
+
+const cartStore = useCartStore()
+
+function handleAddToCart() {
+  cartStore.addToCart(props.product)
+}
 </script>
 
 <template>
@@ -37,5 +45,34 @@ defineProps<{
     <p style="margin-top: 8px; color: #444;">
       {{ product.description }}
     </p>
+
+    <div style="margin-top: 16px; display: flex; gap: 10px;">
+      <button
+        @click="handleAddToCart"
+        style="
+          background: #be2ed6;
+          color: white;
+          border: none;
+          padding: 10px 14px;
+          border-radius: 8px;
+          cursor: pointer;
+        "
+      >
+        Add to Cart
+      </button>
+
+      <RouterLink
+        :to="`/product/${product.id}`"
+        style="
+          background: black;
+          color: white;
+          text-decoration: none;
+          padding: 10px 14px;
+          border-radius: 8px;
+        "
+      >
+        View
+      </RouterLink>
+    </div>
   </div>
 </template>

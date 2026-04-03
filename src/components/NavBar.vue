@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import { useCartStore } from '../stores/cart'
+
+const cartStore = useCartStore()
 </script>
 
 <template>
@@ -24,7 +27,7 @@ import { RouterLink } from 'vue-router'
       <nav style="display: flex; gap: 24px;">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/shop">Shop</RouterLink>
-        <RouterLink to="/cart">Cart</RouterLink>
+        <RouterLink to="/cart">Cart ({{ cartStore.totalItems }})</RouterLink>
         <RouterLink to="/login">Login</RouterLink>
       </nav>
     </div>
