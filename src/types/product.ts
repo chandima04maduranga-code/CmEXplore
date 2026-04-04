@@ -4,7 +4,12 @@ export interface Product {
   description: string
   category: string
   price: number
+  discountPercentage: number
+  rating: number
+  stock: number
+  brand: string
   thumbnail: string
+  images: string[]
 }
 
 export interface ProductsResponse {
