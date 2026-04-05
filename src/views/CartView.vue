@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 
 const cartStore = useCartStore()
@@ -101,6 +102,22 @@ const cartStore = useCartStore()
         <p style="font-size: 22px; font-weight: bold; color: #be2ed6; margin-top: 8px;">
           Total Price: ${{ cartStore.totalPrice.toFixed(2) }}
         </p>
+
+        <RouterLink
+          to="/checkout"
+          style="
+            display: inline-block;
+            margin-top: 18px;
+            background: #be2ed6;
+            color: white;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+          "
+        >
+          Proceed to Checkout
+        </RouterLink>
       </div>
     </div>
   </section>
