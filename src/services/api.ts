@@ -1,23 +1,46 @@
-import type { Product, ProductsResponse } from '../types/product'
+import type { AuthUser, LoginPayload } from '@/types/auth'
+import type { Product, ProductsResponse } from '@/types/product'
 
-export async function getAllProducts(): Promise<Product[]> {
-  const response = await fetch('https://dummyjson.com/products')
+const BASE_URL = 'https://dummyjson.com'
+
+async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options?.headers ?? {}),
+    },
+    ...options,
+  })
 
   if (!response.ok) {
-    throw new Error('Failed to fetch products')
+    const message = `Request failed with status ${response.status}`
+    throw new Error(message)
   }
 
-  const data: ProductsResponse = await response.json()
+  return (await response.json()) as T
+}
+
+export async function fetchProducts(): Promise<Product[]> {
+  const data = await request<ProductsResponse>('/products?limit=100')
   return data.products
 }
 
-export async function getProductById(id: string): Promise<Product> {
-  const response = await fetch(`https://dummyjson.com/products/${id}`)
+export async function fetchProductById(id: number): Promise<Product> {
+  return request<Product>(`/products/${id}`)
+}
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch product')
-  }
+export async function fetchCategories(): Promise<string[]> {
+  const categories = await request<Array<{ slug: string; name: string; url: string }>>('/products/categories')
+  return categories.map((category) => category.slug)
+}
 
-  const data: Product = await response.json()
-  return data
+export async function loginUser(payload: LoginPayload): Promise<AuthUser> {
+  return request<AuthUser>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({
+      username: payload.username,
+      password: payload.password,
+      expiresInMins: payload.expiresInMins ?? 60,
+    }),
+  })
 }

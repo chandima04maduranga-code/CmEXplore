@@ -1,124 +1,71 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import { useCartStore } from '../stores/cart'
+import { computed } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import CartItem from '@/components/CartItem.vue'
+import CartSummary from '@/components/CartSummary.vue'
+import EmptyState from '@/components/EmptyState.vue'
+import { useToast } from '@/composables/useToast'
+import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
 
 const cartStore = useCartStore()
+const authStore = useAuthStore()
+const router = useRouter()
+const { showToast } = useToast()
+
+const hasItems = computed(() => cartStore.items.length > 0)
+
+const removeItem = (productId: number) => {
+  cartStore.removeFromCart(productId)
+  showToast('Item removed from cart')
+}
+
+const proceedToCheckout = async () => {
+  if (!authStore.isAuthenticated) {
+    showToast('Please log in before checkout')
+    await router.push('/login?redirect=/checkout')
+    return
+  }
+
+  await router.push('/checkout')
+}
 </script>
 
 <template>
-  <section style="padding: 40px;">
-    <h1 style="font-size: 36px; font-weight: bold; margin-bottom: 20px;">
-      Your Cart
-    </h1>
-
-    <p v-if="cartStore.items.length === 0" style="font-size: 18px; color: #666;">
-      Your cart is empty.
-    </p>
-
-    <div v-else>
-      <div
-        v-for="item in cartStore.items"
-        :key="item.id"
-        style="
-          display: flex;
-          gap: 20px;
-          align-items: center;
-          border: 1px solid #ddd;
-          border-radius: 12px;
-          padding: 16px;
-          background: white;
-          margin-bottom: 16px;
-        "
-      >
-        <img
-          :src="item.thumbnail"
-          :alt="item.title"
-          style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;"
-        />
-
-        <div style="flex: 1;">
-          <h2 style="font-size: 22px; font-weight: bold;">
-            {{ item.title }}
-          </h2>
-
-          <p style="color: #666; margin-top: 6px;">
-            {{ item.category }}
-          </p>
-
-          <p style="color: #be2ed6; font-weight: bold; margin-top: 8px;">
-            ${{ item.price }}
-          </p>
-
-          <div style="margin-top: 12px; display: flex; gap: 10px; align-items: center;">
-            <button
-              @click="cartStore.decreaseQuantity(item.id)"
-              style="padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer;"
-            >
-              -
-            </button>
-
-            <span style="font-size: 18px; font-weight: bold;">
-              {{ item.quantity }}
-            </span>
-
-            <button
-              @click="cartStore.increaseQuantity(item.id)"
-              style="padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer;"
-            >
-              +
-            </button>
-
-            <button
-              @click="cartStore.removeFromCart(item.id)"
-              style="
-                margin-left: 12px;
-                background: crimson;
-                color: white;
-                border: none;
-                padding: 8px 14px;
-                border-radius: 8px;
-                cursor: pointer;
-              "
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div
-        style="
-          margin-top: 24px;
-          padding: 20px;
-          border: 1px solid #ddd;
-          border-radius: 12px;
-          background: white;
-        "
-      >
-        <p style="font-size: 20px; font-weight: bold;">
-          Total Items: {{ cartStore.totalItems }}
-        </p>
-
-        <p style="font-size: 22px; font-weight: bold; color: #be2ed6; margin-top: 8px;">
-          Total Price: ${{ cartStore.totalPrice.toFixed(2) }}
-        </p>
-
-        <RouterLink
-          to="/checkout"
-          style="
-            display: inline-block;
-            margin-top: 18px;
-            background: #be2ed6;
-            color: white;
-            text-decoration: none;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-          "
-        >
-          Proceed to Checkout
-        </RouterLink>
-      </div>
+  <div class="space-y-8">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-600 dark:text-brand-300">Cart</p>
+      <h1 class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">Your shopping cart</h1>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Review your items, update quantities, and continue to checkout when you are ready.</p>
     </div>
-  </section>
+
+    <EmptyState
+      v-if="!hasItems"
+      title="Your cart is empty"
+      description="Browse the catalog and add products to continue shopping with CmEXplore."
+    />
+
+    <div v-else class="grid gap-8 lg:grid-cols-[1.4fr_0.6fr]">
+      <section class="space-y-4">
+        <CartItem
+          v-for="item in cartStore.items"
+          :key="item.product.id"
+          :item="item"
+          @remove="removeItem"
+          @update-quantity="cartStore.updateQuantity"
+        />
+      </section>
+
+      <CartSummary :subtotal="cartStore.subtotal" :shipping="cartStore.shipping" :total="cartStore.total">
+        <div class="mt-6 space-y-3">
+          <button class="w-full rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-600" @click="proceedToCheckout">
+            Proceed to Checkout
+          </button>
+          <RouterLink to="/" class="block w-full rounded-2xl border border-brand-200 px-4 py-3 text-center text-sm font-semibold text-brand-700 transition hover:border-brand-400 hover:bg-brand-50 dark:border-brand-700 dark:text-brand-300 dark:hover:bg-brand-900/30">
+            Continue Shopping
+          </RouterLink>
+        </div>
+      </CartSummary>
+    </div>
+  </div>
 </template>
