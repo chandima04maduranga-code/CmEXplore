@@ -1,0 +1,20 @@
+The aim 01: Set up the folder structure and architecture for a Vue 3 shopping SPA using TypeScript, Vue Router, Pinia, and Tailwind CSS.
+Actual prompt: Create a clean folder structure for a Vue 3 TypeScript e-commerce SPA that must use Vue Router, Pinia, and Tailwind CSS, with reusable components and strict typing.
+
+The aim 02: Define strict TypeScript interfaces for DummyJSON product and authentication responses.
+Actual prompt: Create strict TypeScript interfaces for DummyJSON product and auth login responses without using any type.
+
+The aim 03: Build reusable Vue components for a product catalog with search, category filter, sorting, and product cards.
+Actual prompt: Generate a reusable Vue 3 Composition API component plan for an e-commerce product listing page with search, category filter, sort control, and product cards.
+
+The aim 04: Implement a Pinia cart store with localStorage persistence and typed cart items.
+Actual prompt: Show how to build a strongly typed Pinia cart store in Vue 3 with add, remove, update quantity, subtotal, total, and localStorage persistence.
+
+The aim 05: Create a login simulation page using DummyJSON auth and protect the checkout route.
+Actual prompt: Build a Vue 3 TypeScript login flow using DummyJSON auth login, save the user in localStorage, and redirect unauthenticated users to login before checkout.
+
+The aim 06: Design a frontend-only checkout page and payment form that looks modern and responsive.
+Actual prompt: Create a modern checkout page UI for a Vue 3 shopping website using Tailwind CSS with shipping fields, payment method options, and order summary.
+
+The aim 07: Polish the user interface with a purple theme, dark mode, loading states, empty states, and a responsive navbar.
+Actual prompt: Suggest a premium purple Tailwind UI system using #be2ed6 as the primary color and apply it to navbar, cards, forms, dark mode, and call-to-action buttons.

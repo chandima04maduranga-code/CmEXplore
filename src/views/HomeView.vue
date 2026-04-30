@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+
 import HeroBanner from '@/components/HeroBanner.vue'
 import StatsStrip from '@/components/StatsStrip.vue'
 import SearchBar from '@/components/SearchBar.vue'
@@ -12,6 +14,16 @@ import ErrorState from '@/components/ErrorState.vue'
 import { useProductsStore } from '@/stores/products'
 
 const productsStore = useProductsStore()
+
+const {
+  loading,
+  error,
+  categories,
+  searchTerm,
+  selectedCategory,
+  selectedSort,
+  filteredProducts,
+} = storeToRefs(productsStore)
 
 onMounted(() => {
   productsStore.loadProducts()
@@ -66,24 +78,24 @@ onMounted(() => {
           </p>
         </div>
         <p class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm dark:bg-white/5 dark:text-slate-300">
-          Showing {{ productsStore.filteredProducts.length }} items
+          Showing {{ filteredProducts.length }} items
         </p>
       </div>
 
       <div class="grid gap-4 rounded-[2rem] border border-brand-100 bg-white/70 p-5 shadow-sm dark:border-white/10 dark:bg-white/5 lg:grid-cols-[1.4fr_1fr_1fr]">
-        <SearchBar v-model="productsStore.searchTerm" />
-        <CategoryFilter v-model="productsStore.selectedCategory" :options="productsStore.categories" />
-        <SortSelect v-model="productsStore.selectedSort" />
+        <SearchBar v-model="searchTerm" />
+        <CategoryFilter v-model="selectedCategory" :options="categories" />
+        <SortSelect v-model="selectedSort" />
       </div>
-
-      <LoadingSpinner v-if="productsStore.loading" />
-      <ErrorState v-else-if="productsStore.error" title="Unable to load products" :description="productsStore.error" />
+     
+      <LoadingSpinner v-if="loading" />
+      <ErrorState v-else-if="error" title="Unable to load products" :description="error" />
       <EmptyState
-        v-else-if="productsStore.filteredProducts.length === 0"
+        v-else-if="filteredProducts.length === 0"
         title="No matching products"
         description="Try changing your keyword, category, or sorting option to see more products."
       />
-      <ProductGrid v-else :products="productsStore.filteredProducts" />
+      <ProductGrid v-else :products="filteredProducts" />
     </section>
 
     <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
